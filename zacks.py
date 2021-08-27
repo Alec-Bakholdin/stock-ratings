@@ -7,7 +7,7 @@ from time import perf_counter
 
 
 def get_zacks_data() -> List[ZacksRow]:
-    print(" * * * * * * * * * * * * * * * * * * * *\nFetching Zacks data...")
+    print("\n\n* * * * * * * * * * * * * * * * * * * *\nFetching Zacks data...")
     start = perf_counter()
 
     url = "https://www.zacks.com/portfolios/tools/ajxExportExel.php"

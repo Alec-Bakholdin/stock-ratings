@@ -6,7 +6,7 @@ from time import perf_counter
 
 
 def get_tip_ranks_data(companies: List[Company]) -> List[TipRanksRow]:
-    print(" * * * * * * * * * * * * * * * * * * * *\nFetching TipRanks data...")
+    print("\n\n* * * * * * * * * * * * * * * * * * * *\nFetching TipRanks data...")
     start = perf_counter()
     symbols = ",".join(list(map(lambda co: co.symbol, companies)))
     url = f"https://www.tipranks.com/api/portfolio/getPortfolioHoldingStockData/?tickers={symbols}"
