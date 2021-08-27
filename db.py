@@ -53,7 +53,8 @@ def save_tip_ranks_data(tip_ranks_rows: List[TipRanksRow]):
     print(" * * * * * * * * * * * * * * * * * * * *\nSaving %d TipRanks rows" % len(tip_ranks_rows))
 
     def map_tip_ranks_row(row: TipRanksRow) -> str:
-        return f"('{row.symbol}', '{todayStr}', '{row.analyst_consensus}', '{row.best_analyst_consensus}')"
+        query_str =  f"('{row.symbol}', '{todayStr}', '{row.analyst_consensus}', '{row.best_analyst_consensus}')"
+        return query_str.replace("'None'", "null")
 
     list_of_sql_values = list(map(map_tip_ranks_row, tip_ranks_rows))
     insert_query = "INSERT IGNORE INTO tip_ranks (symbol, date_retrieved, analyst_consensus, best_analyst_consensus) VALUES " + ", ".join(
