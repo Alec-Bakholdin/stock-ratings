@@ -24,23 +24,40 @@ def close_db():
 
 
 def save_companies(companies: List[Company]):
+    print(" * * * * * * * * * * * * * * * * * * * *\nSaving %d companies to database" % len(companies))
     list_of_sql_values = list(map(lambda co: f"('{co.symbol}', '{co.company}')", companies))
     insert_query = "INSERT IGNORE INTO companies (symbol, company_name) values " + ", ".join(list_of_sql_values)
+    print("Query: %s", insert_query)
     cursor.execute(insert_query)
+    conn.commit()
+    print("Success!")
 
 
 def save_zacks_data(zacks_rows: List[ZacksRow]):
+    print(" * * * * * * * * * * * * * * * * * * * *\nSaving %d zacks rows to database" % len(zacks_rows))
+
     def map_zacks_row(row: ZacksRow) -> str:
         zacks_str = f"('{row.symbol}', '{todayStr}', {row.industry_rank}, {row.zacks_rank}, '{row.value_score}', '{row.growth_score}', '{row.momentum_score}', '{row.vgm_score}')";
         return zacks_str.replace("'None'", "null").replace("None", "null")
+
     list_of_sql_values = list(map(map_zacks_row, zacks_rows))
-    insert_query = "INSERT IGNORE INTO zacks (symbol, date_retrieved, industry_rank, zacks_rank, value_score, growth_score, momentum_score, vgm_score) VALUES " + ", ".join(list_of_sql_values)
+    insert_query = "INSERT IGNORE INTO zacks (symbol, date_retrieved, industry_rank, zacks_rank, value_score, growth_score, momentum_score, vgm_score) VALUES " + ", ".join(
+        list_of_sql_values)
+    print("Query: %s", insert_query)
     cursor.execute(insert_query)
+    conn.commit()
+    print("Success")
 
 
 def save_tip_ranks_data(tip_ranks_rows: List[TipRanksRow]):
+    print(" * * * * * * * * * * * * * * * * * * * *\nSaving %d TipRanks rows" % len(tip_ranks_rows))
+
     def map_tip_ranks_row(row: TipRanksRow) -> str:
         return f"('{row.symbol}', '{todayStr}', '{row.analyst_consensus}', '{row.best_analyst_consensus}')"
+
     list_of_sql_values = list(map(map_tip_ranks_row, tip_ranks_rows))
-    insert_query = "INSERT IGNORE INTO tip_ranks (symbol, date_retrieved, analyst_consensus, best_analyst_consensus) VALUES " + ", ".join(list_of_sql_values)
+    insert_query = "INSERT IGNORE INTO tip_ranks (symbol, date_retrieved, analyst_consensus, best_analyst_consensus) VALUES " + ", ".join(
+        list_of_sql_values)
+    print("Query: %s" % insert_query)
     cursor.execute(insert_query)
+    conn.commit()
