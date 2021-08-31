@@ -1,5 +1,5 @@
 from typing import List
-from model import *
+from model import DataRow
 from datetime import date
 import mysql.connector
 import configparser
@@ -22,43 +22,19 @@ def close_db():
     conn.commit()
     conn.close()
 
-def save_companies(companies: List[Company]):
-    print(" * * * * * * * * * * * * * * * * * * * *\nSaving %d companies to database" % len(companies))
-    list_of_sql_values = list(map(lambda co: f"('{co.symbol}', '{co.company}')", companies))
-    insert_query = "INSERT IGNORE INTO companies (symbol, company_name) values " + ", ".join(list_of_sql_values)
-    print("\nQuery: %s", insert_query)
-    cursor.execute(insert_query)
+
+def save_data_rows(data_rows: List[DataRow], data_type):
+    table_name = data_type.table_name()
+    print("\n\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
+    print("\n\nSaving %d rows to %s table" % (len(data_rows), table_name))
+    fields_list = data_type.field_names_list()
+    fields_str = f"({', '.join(fields_list)})"
+    values_str = ", ".join(list(map(lambda row: row.sql_str(), data_rows)))
+    on_duplicate_str = ", ".join(list(map(lambda x: f"{x} = VALUES({x})", fields_list)))
+    sql_command = f"INSERT IGNORE INTO {table_name} {fields_str} " \
+                  f"VALUES {values_str} " \
+                  f"ON DUPLICATE KEY UPDATE {on_duplicate_str};"
+    print(f"\nExecuting SQL Query: {sql_command}")
+    cursor.execute(sql_command)
     conn.commit()
     print("\nSuccess!")
-
-
-def save_zacks_data(zacks_rows: List[ZacksRow]):
-    print("\n\n* * * * * * * * * * * * * * * * * * * *\nSaving %d zacks rows to database" % len(zacks_rows))
-
-    def map_zacks_row(row: ZacksRow) -> str:
-        zacks_str = f"('{row.symbol}', '{todayStr}', {row.industry_rank}, {row.zacks_rank}, '{row.value_score}', '{row.growth_score}', '{row.momentum_score}', '{row.vgm_score}')";
-        return zacks_str.replace("'None'", "null").replace("None", "null")
-
-    list_of_sql_values = list(map(map_zacks_row, zacks_rows))
-    insert_query = "INSERT IGNORE INTO zacks (symbol, date_retrieved, industry_rank, zacks_rank, value_score, growth_score, momentum_score, vgm_score) VALUES " + ", ".join(
-        list_of_sql_values)
-    print("\nQuery: %s", insert_query)
-    cursor.execute(insert_query)
-    conn.commit()
-    print("Success")
-
-
-def save_tip_ranks_data(tip_ranks_rows: List[TipRanksRow]):
-    print("\n\n* * * * * * * * * * * * * * * * * * * *\nSaving %d TipRanks rows" % len(tip_ranks_rows))
-
-    def map_tip_ranks_row(row: TipRanksRow) -> str:
-        query_str =  f"('{row.symbol}', '{todayStr}', '{row.analyst_consensus}', '{row.best_analyst_consensus}')"
-        return query_str.replace("'None'", "null")
-
-    list_of_sql_values = list(map(map_tip_ranks_row, tip_ranks_rows))
-    insert_query = "INSERT IGNORE INTO tip_ranks (symbol, date_retrieved, analyst_consensus, best_analyst_consensus) VALUES " + ", ".join(
-        list_of_sql_values)
-    print("\nQuery: %s\n" % insert_query)
-    cursor.execute(insert_query)
-    conn.commit()
-    print("Success!")
