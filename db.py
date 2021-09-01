@@ -4,7 +4,8 @@ from datetime import date
 import mysql.connector
 import configparser
 
-todayStr = str(date.today())
+today_str = str(date.today())
+today_str_f = f"'{today_str}'"
 config = configparser.ConfigParser()
 config.read_file(open("./application.cfg"))
 profile = 'REMOTE'
@@ -23,13 +24,17 @@ def close_db():
     conn.close()
 
 
-def save_data_rows(data_rows: List[DataRow], data_type):
+def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = True):
     table_name = data_type.table_name()
     print("\n\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
     print("\n\nSaving %d rows to %s table" % (len(data_rows), table_name))
     fields_list = data_type.field_names_list()
-    fields_str = f"({', '.join(fields_list)})"
-    values_str = ", ".join(list(map(lambda row: row.sql_str(), data_rows)))
+    fields_str = f"({', '.join(fields_list)}{', date_retrieved' if include_date else ''})"
+
+    def row_to_sql_value(row):
+        return f"({','.join(row.field_values() + ([today_str_f] if include_date else []))})"
+
+    values_str = ", ".join(list(map(row_to_sql_value, data_rows)))
     on_duplicate_str = ", ".join(list(map(lambda x: f"{x} = VALUES({x})", fields_list)))
     sql_command = f"INSERT IGNORE INTO {table_name} {fields_str} " \
                   f"VALUES {values_str} " \

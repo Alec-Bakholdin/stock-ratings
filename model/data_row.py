@@ -1,4 +1,5 @@
 from dataclasses import dataclass, fields
+from typing import List
 
 need_quotations = [
     str
@@ -19,7 +20,7 @@ class DataRow:
         return f"({field_names_str})"
 
     # reflection tostring method for SQL
-    def sql_str(self):
+    def field_values(self) -> List[str]:
         field_values_as_strings = []
         for field_name in self.__class__.field_names_list():
             field_type = self.__annotations__[field_name]
@@ -29,5 +30,4 @@ class DataRow:
             elif field_type in need_quotations:
                 field_value = f"'{field_value}'"
             field_values_as_strings.append(str(field_value))
-        field_value_list_str = ", ".join(field_values_as_strings)
-        return f"({field_value_list_str})"
+        return field_values_as_strings

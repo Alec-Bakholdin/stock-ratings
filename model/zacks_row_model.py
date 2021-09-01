@@ -18,14 +18,14 @@ indices = {
 @dataclass
 class ZacksRow(DataRow):
     symbol: str
-    price: float
-    industry_rank: int
-    zacks_rank: int
-    value_score: str
-    growth_score: str
-    momentum_score: str
-    vgm_score: str
-    _company: str
+    price: float = None
+    industry_rank: int = None
+    zacks_rank: int = None
+    value_score: str = None
+    growth_score: str = None
+    momentum_score: str = None
+    vgm_score: str = None
+    _company: str = None
 
     @property
     def company(self) -> str:
