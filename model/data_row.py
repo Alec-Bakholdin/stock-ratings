@@ -28,6 +28,7 @@ class DataRow:
             if field_value is None:
                 field_value = "null"
             elif field_type in need_quotations:
-                field_value = f"'{field_value}'"
+                sanitized_field_value =str(field_value).replace("'", '')
+                field_value = f"'{sanitized_field_value}'"
             field_values_as_strings.append(str(field_value))
         return field_values_as_strings
