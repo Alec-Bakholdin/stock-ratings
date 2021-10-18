@@ -26,8 +26,6 @@ def close_db():
 
 def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = True):
     table_name = data_type.table_name()
-    print("\n\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *")
-    print("\n\nSaving %d rows to %s table" % (len(data_rows), table_name))
     fields_list = data_type.field_names_list()
     fields_str = f"({', '.join(fields_list)}{', date_retrieved' if include_date else ''})"
 
@@ -42,4 +40,3 @@ def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = Tru
     print(f"\nExecuting SQL Query: {sql_command}")
     cursor.execute(sql_command)
     conn.commit()
-    print("\nSuccess!")
