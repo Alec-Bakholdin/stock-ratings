@@ -17,6 +17,7 @@ conn = mysql.connector.connect(
     port=config[profile]['port']
 )
 cursor = conn.cursor()
+cursor.execute('set max_allowed_packet=67108864')
 
 
 def close_db():
