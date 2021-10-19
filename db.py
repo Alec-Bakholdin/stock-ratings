@@ -17,6 +17,7 @@ conn = mysql.connector.connect(
     port=config[profile]['port']
 )
 cursor = conn.cursor()
+cursor.execute('SET net_read_timeout = 90;')
 
 
 def close_db():
