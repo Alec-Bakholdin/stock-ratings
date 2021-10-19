@@ -39,4 +39,3 @@ def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = Tru
                   f"ON DUPLICATE KEY UPDATE {on_duplicate_str};"
     print(f"\nExecuting SQL Query: {sql_command}")
     cursor.execute(sql_command)
-    conn.commit()
