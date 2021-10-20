@@ -9,23 +9,25 @@ today_str_f = f"'{today_str}'"
 config = configparser.ConfigParser()
 config.read_file(open("./application.cfg"))
 profile = 'REMOTE'
-conn = mysql.connector.connect(
-    host=config[profile]['host'],
-    user=config[profile]['user'],
-    password=config[profile]['password'],
-    database=config[profile]['database'],
-    port=config[profile]['port']
-)
-cursor = conn.cursor()
-cursor.execute('SET net_read_timeout = 90;')
 
 
-def close_db():
+def open_db() -> mysql.connector.MySQLConnection:
+    conn = mysql.connector.connect(
+        host=config[profile]['host'],
+        user=config[profile]['user'],
+        password=config[profile]['password'],
+        database=config[profile]['database'],
+        port=config[profile]['port']
+    )
+    return conn
+
+
+def close_db(conn: mysql.connector.MySQLConnection):
     conn.commit()
     conn.close()
 
 
-def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = True):
+def save_data_rows(conn: mysql.connector.MySQLConnection, data_rows: List[DataRow], data_type, include_date: bool = True):
     table_name = data_type.table_name()
     fields_list = data_type.field_names_list()
     fields_str = f"({', '.join(fields_list)}{', date_retrieved' if include_date else ''})"
@@ -38,5 +40,7 @@ def save_data_rows(data_rows: List[DataRow], data_type, include_date: bool = Tru
     sql_command = f"INSERT IGNORE INTO {table_name} {fields_str} " \
                   f"VALUES {values_str} " \
                   f"ON DUPLICATE KEY UPDATE {on_duplicate_str};"
+
     print(f"\nExecuting SQL Query: {sql_command}")
+    cursor = conn.cursor()
     cursor.execute(sql_command)
