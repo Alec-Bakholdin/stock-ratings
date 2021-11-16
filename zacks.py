@@ -21,6 +21,11 @@ def get_zacks_data() -> List[ZacksRow]:
         print("Error", response.status_code, response.text)
 
     reader = list(csv.reader(StringIO(str(response.text)), delimiter=','))
-    ZacksRow.validate_headers((reader[0]))
-    data = list(map(ZacksRow, reader[1:]))
-    return data
+    header_index = 0
+    while len(reader[header_index]) == 0:
+        header_index += 1
+    header_row = reader[header_index]
+    data = reader[(header_index + 1):]
+    ZacksRow.validate_headers(header_row)
+    zacks_data = list(map(ZacksRow, data))
+    return zacks_data
