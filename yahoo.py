@@ -17,7 +17,14 @@ def get_yahoo_data(companies: List[Company]) -> List[YahooRow]:
 
 def get_yahoo_stock_data(symbol: str) -> YahooRow:
     url = f"https://finance.yahoo.com/quote/{symbol}"
-    response = get(url, {'User-Agent': 'PostmanRuntime/7.28.4', 'Cookie': 'B=21ka2flgmgph7&b=3&s=d4'})
+    headers = {
+        #'Cookie': 'B=3m0tq4pguu00n&b=3&s=uf',
+        'User-Agent': 'PostmanRuntime',
+        #'Accept': '*/*',
+        #'Accept-Encoding': 'gzip, deflate, br',
+        #'Connection': 'keep-alive'
+    }
+    response = get(url, headers=headers)
     yahoo_row = YahooRow(symbol)
     if response.status_code != 200:
         return yahoo_row
